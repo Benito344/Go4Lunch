@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/map_view" android:icon="@drawable/ic_map_white_24dp" android:title="Map View"/>
+    <item android:id="@+id/list_view" android:icon="@drawable/ic_view_list_white_24dp" android:title="List View"/>
+    <item android:id="@+id/workmates" android:icon="@drawable/ic_people_white_24dp" android:title="Workmates"/>
+</menu>

@@ -1,12 +1,16 @@
 package com.behague.benjamin.go_4_lunch.controllers.activitys;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.behague.benjamin.go_4_lunch.R;
 import com.firebase.ui.auth.AuthUI;
@@ -17,7 +21,7 @@ import java.util.Arrays;
 
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
@@ -33,7 +37,24 @@ public class MainActivity extends AppCompatActivity {
         if(!isCurrentUserLogged()) {
             this.startSignInActivity();
         }
+        this.configureToolbar();
         this.configureDrawerLayout();
+        this.configureNavigationView();
+
+    }
+
+    private void configureToolbar(){
+        //Get the toolbar view inside the activity layout
+        toolbar = findViewById(R.id.toolbar);
+        //Sets the Toolbar
+        setSupportActionBar(toolbar);
+    }
+
+    private void configureNavigationView(){
+        NavigationView navigationView ;
+
+        navigationView = findViewById(R.id.activity_main_nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     //Configure Drawer Layout
@@ -42,6 +63,22 @@ public class MainActivity extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Handle back click to close menu
+        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void startSignInActivity(){

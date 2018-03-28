@@ -7,7 +7,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    
+
+    <!-- Toolbar -->
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">#FFF</item>
+    </style>
+
+    <!-- Authentification -->
     <style name="auth_screen" parent="AppTheme">
         <item name="android:windowBackground">@drawable/fond</item>
         <item name="windowActionBar">false</item>

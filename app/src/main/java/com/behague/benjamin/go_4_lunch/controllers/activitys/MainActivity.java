@@ -11,20 +11,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.behague.benjamin.go_4_lunch.R;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    //FOR UI
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
+
+    //FOR DATA
+    private static final int SIGN_OUT_TASK = 10;
     private static final int RC_SIGN_IN = 1993;
 
     @Override
@@ -65,9 +72,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
+    public void onClickSignOutButton() { this.signOutUserFromFirebase(); }
+
+    private void signOutUserFromFirebase(){
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                switch (origin){
+
+                    case SIGN_OUT_TASK:
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.activity_main_drawer_logout :
+                onClickSignOutButton();
+                break;
 
+            default :
+                break;
+        }
         return true;
     }
 

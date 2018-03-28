@@ -3,8 +3,11 @@ package com.behague.benjamin.go_4_lunch.controllers.activitys;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.behague.benjamin.go_4_lunch.R;
+import com.behague.benjamin.go_4_lunch.views.PageAdapter;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -29,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FOR UI
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
+    private BottomNavigationView bottomNavView;
+    @BindView(R.id.activity_main_viewpager)
+    ViewPager viewPager;
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
@@ -41,13 +49,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         ButterKnife.bind(this);
 
-        if(!isCurrentUserLogged()) {
+        if (!isCurrentUserLogged()) {
             this.startSignInActivity();
         }
         this.configureToolbar();
         this.configureDrawerLayout();
         this.configureNavigationView();
+        this.configureViewPager();
 
+        bottomNavView = findViewById(R.id.bottom_navigation);
+
+        bottomNavView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                        onNavigationBottom(item.getItemId());
+
+                        return true;
+                    }
+                });
     }
 
     private void configureToolbar(){
@@ -70,6 +91,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+    }
+
+    private void configureViewPager(){
+        // Get ViewPager from layout
+        ViewPager page = findViewById(R.id.activity_main_viewpager);
+        // Set Adapter PageAdapter and glue it together
+        page.setAdapter(new PageAdapter(getSupportFragmentManager()));
     }
 
     public void onClickSignOutButton() { this.signOutUserFromFirebase(); }
@@ -100,6 +128,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
     }
 
+    private boolean onNavigationBottom(int item){
+        switch (item) {
+
+            case R.id.map_view :
+                viewPager.setCurrentItem(0);
+                break;
+
+            case R.id.list_view :
+                viewPager.setCurrentItem(1);
+                break;
+
+            case R.id.workmates :
+                viewPager.setCurrentItem(2);
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
@@ -110,6 +159,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default :
                 break;
         }
+
+        this.drawerLayout.closeDrawer(GravityCompat.START);
+
         return true;
     }
 

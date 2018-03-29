@@ -22,8 +22,8 @@
         android:id="@+id/relative_layout_drawer">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:id="@+id/picture_user"
             app:srcCompat="@drawable/ic_anon_user_48dp"
             android:layout_alignParentStart="true"

@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -13,15 +15,27 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.behague.benjamin.go_4_lunch.R;
+import com.behague.benjamin.go_4_lunch.models.api.UserHelper;
+import com.behague.benjamin.go_4_lunch.models.objects.User;
 import com.behague.benjamin.go_4_lunch.views.PageAdapter;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 
@@ -35,8 +49,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private BottomNavigationView bottomNavView;
+
+    @BindView(R.id.activity_main_nav_view)
+    NavigationView navView;
+
     @BindView(R.id.activity_main_viewpager)
     ViewPager viewPager;
+
+    private TextView userName;
+    private TextView userEmail;
+    private ImageView userPicture;
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
@@ -52,12 +74,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!isCurrentUserLogged()) {
             this.startSignInActivity();
         }
+
+        bottomNavView = findViewById(R.id.bottom_navigation);
+        View headerView = navView.getHeaderView(0);
+        userName = headerView.findViewById(R.id.name_user);
+        userEmail = headerView.findViewById(R.id.mail_user);
+        userPicture = headerView.findViewById(R.id.picture_user);
+
         this.configureToolbar();
         this.configureDrawerLayout();
         this.configureNavigationView();
         this.configureViewPager();
-
-        bottomNavView = findViewById(R.id.bottom_navigation);
+        this.initUserInfo();
 
         bottomNavView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -98,6 +126,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ViewPager page = findViewById(R.id.activity_main_viewpager);
         // Set Adapter PageAdapter and glue it together
         page.setAdapter(new PageAdapter(getSupportFragmentManager()));
+    }
+
+    private void initUserInfo(){
+        if (this.getCurrentUser() != null){
+            if (this.getCurrentUser().getPhotoUrl() != null) {
+                Glide.with(this)
+                        .load(this.getCurrentUser().getPhotoUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(userPicture);
+            }
+
+            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
+            this.userEmail.setText(email);
+
+            // 7 - Get additional data from Firestore (isMentor & Username)
+            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    User currentUser = documentSnapshot.toObject(User.class);
+                    String username = TextUtils.isEmpty(currentUser.getUsername()) ? getString(R.string.info_no_username_found) : currentUser.getUsername();
+                    userName.setText(username);
+                }
+            });
+        }
     }
 
     public void onClickSignOutButton() { this.signOutUserFromFirebase(); }
@@ -147,6 +199,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 4 - Handle SignIn Activity response on activity result
+        this.handleResponseAfterSignIn(requestCode, resultCode, data);
+    }
+
+    private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data){
+
+        IdpResponse response = IdpResponse.fromResultIntent(data);
+
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) { // SUCCESS
+                // 2 - CREATE USER IN FIRESTORE
+                this.createUserInFirestore();
+                Toast.makeText(getApplicationContext(), getString(R.string.connection_succeed),Toast.LENGTH_SHORT).show();
+                this.initUserInfo();
+            } else { // ERRORS
+                if (response == null) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_authentication_canceled),Toast.LENGTH_SHORT).show();
+                } else if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_no_internet),Toast.LENGTH_SHORT).show();
+                } else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void createUserInFirestore(){
+        if (this.getCurrentUser() != null){
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String username = this.getCurrentUser().getDisplayName();
+            String uemail = this.getCurrentUser().getEmail();
+            String uid = this.getCurrentUser().getUid();
+
+            UserHelper.createUser(uid, username, uemail, urlPicture).addOnFailureListener(this.onFailureListener());
+        }
+    }
+
+    // --------------------
+    // ERROR HANDLER
+    // --------------------
+
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
     }
 
     @Override

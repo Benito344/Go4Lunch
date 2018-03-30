@@ -4,9 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.behague.benjamin.go_4_lunch.R;
 import com.behague.benjamin.go_4_lunch.controllers.fragments.ListView;
-import com.behague.benjamin.go_4_lunch.controllers.fragments.MapView;
+import com.behague.benjamin.go_4_lunch.controllers.fragments.MapViewFragment;
 import com.behague.benjamin.go_4_lunch.controllers.fragments.Workmates;
 
 /**
@@ -29,7 +28,7 @@ public class PageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0 :
-                return MapView.newInstance();
+                return MapViewFragment.newInstance();
 
             case 1 :
                 return ListView.newInstance();

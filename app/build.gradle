@@ -21,7 +21,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.android.support:support-v4:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
@@ -47,7 +47,23 @@ dependencies {
     // FACEBOOK LOGIN SUPPORT
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 
-    // GOOGLE MAP
+    // GOOGLE
+    // -> Map
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
+
+    // -> Place
+    compile 'com.google.android.gms:play-services-places:11.8.0'
+
+    compile 'com.google.android.gms:play-services:11.8.0'
+
+    // GSON, RETROFIT 2, REACTIVEX
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.7'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+    compile 'com.mcxiaoke.volley:library:1.0.19'
 }
 apply plugin: 'com.google.gms.google-services'

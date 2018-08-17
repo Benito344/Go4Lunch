@@ -3,6 +3,7 @@
           package="com.behague.benjamin.go_4_lunch">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
 
     <application
         android:allowBackup="true"
@@ -11,10 +12,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <!--<meta-data-->
+            <!--android:name="com.google.android.geo.API_KEY"-->
+            <!--android:value="AIzaSyDGnm0Iswh7XaZS9teVqUtBbXK4l9axflo"/>-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDGnm0Iswh7XaZS9teVqUtBbXK4l9axflo"/>
+            android:value="AIzaSyCVZ_8DMHx9ylN3yOkBm5hF2SBtDAgaGMs"/>
+
+
 
         <activity android:name=".controllers.activitys.MainActivity"
                   android:label="I'm Hungry !">

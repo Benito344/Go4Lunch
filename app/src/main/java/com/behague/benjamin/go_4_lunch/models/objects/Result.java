@@ -27,7 +27,7 @@ public class Result {
     private PlusCode plusCode;
     @SerializedName("rating")
     @Expose
-    private Integer rating;
+    private float rating;
     @SerializedName("reference")
     @Expose
     private String reference;
@@ -95,11 +95,11 @@ public class Result {
         this.plusCode = plusCode;
     }
 
-    public Integer getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 

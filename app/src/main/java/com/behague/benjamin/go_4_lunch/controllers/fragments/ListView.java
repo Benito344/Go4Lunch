@@ -1,37 +1,32 @@
 package com.behague.benjamin.go_4_lunch.controllers.fragments;
 
 
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.behague.benjamin.go_4_lunch.R;
 import com.behague.benjamin.go_4_lunch.controllers.activitys.MainActivity;
-import com.behague.benjamin.go_4_lunch.models.objects.OpeningHours;
-import com.behague.benjamin.go_4_lunch.models.objects.Photo;
+import com.behague.benjamin.go_4_lunch.models.objects.PlaceObject;
 import com.behague.benjamin.go_4_lunch.models.objects.Result;
+import com.behague.benjamin.go_4_lunch.utils.GooglePlaceStream;
 import com.behague.benjamin.go_4_lunch.utils.ListAdapter;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +35,8 @@ public class ListView extends Fragment {
 
     private List<Result> listResult;
     private ListAdapter listAdapter;
+    private Disposable disposable;
+    private String latLong ;
 
     @BindView(R.id.recycler_view)
     RecyclerView rcView;
@@ -54,32 +51,24 @@ public class ListView extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@Nullable LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        assert inflater != null;
         View view = inflater.inflate(R.layout.fragment_list_view, container, false);
         ButterKnife.bind(this, view);
+        latLong = "43.6780742,4.0978829";
+
         this.initRecyclerView();
-
-        Resources res = getResources();
-        InputStream is = res.openRawResource(R.raw.restaurant);
-        Scanner scanner = new Scanner(is);
-        StringBuilder builder = new StringBuilder();
-
-        while(scanner.hasNextLine()) {
-            builder.append(scanner.nextLine());
-        }
-
-        this.executeParseJSON(builder.toString());
-
+        this.executeHttpRequest();
 
         rcView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0) {
-                    ((MainActivity)getActivity()).setNavigationVisibility(false);
+                    ((MainActivity) Objects.requireNonNull(getActivity())).setNavigationVisibility(false);
                 } else if (dy < 0 ) {
-                    ((MainActivity)getActivity()).setNavigationVisibility(true);
+                    ((MainActivity) Objects.requireNonNull(getActivity())).setNavigationVisibility(true);
                 }
             }
 
@@ -100,49 +89,34 @@ public class ListView extends Fragment {
         this.rcView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    private void executeParseJSON(String s) {
-
-        try {
-            JSONObject root = new JSONObject(s);
-
-            JSONArray result = root.getJSONArray("results");
-
-            for(int i = 0 ; i < result.length() ; i++){
-
-                Result resultObject = new Result();
-                Photo photoObject = new Photo();
-                OpeningHours openHours = new OpeningHours();
-
-                List<Photo> photo = new ArrayList<>();
-
-                JSONObject resultat = result.getJSONObject(i);
-                JSONObject geometry = resultat.getJSONObject("geometry");
-/*                if(resultat.getJSONArray("photos") != null) {
-                    JSONArray photosArray = resultat.getJSONArray("photos");
-                    JSONObject photosObj = photosArray.getJSONObject(0);
-                    photoObject.setPhotoReference(photosObj.getString("photo_reference"));
-                    photo.add(photoObject);
-                    resultObject.setPhotos(photo);
-                }
-                if(resultat.getJSONObject("openning_hours") != null) {
-                    JSONObject openNow = resultat.getJSONObject("opening_hours");
-                    openHours.setOpenNow(openNow.getBoolean("open_now"));
-                    resultObject.setOpeningHours(openHours);
-                }*/
-
-                resultObject.setName(resultat.getString("name"));
-                resultObject.setVicinity(resultat.getString("vicinity"));
-
-                listResult.add(resultObject);
+    private void executeHttpRequest(){
+        this.disposable = GooglePlaceStream.streamPlaces(latLong, 1500, "restaurant").subscribeWith(new DisposableObserver<PlaceObject>(){
+            @Override
+            public void onNext(PlaceObject placeObject){
+                listResult.addAll(placeObject.getResults());
+                listAdapter.notifyItemRangeChanged(0,listResult.size());
             }
-            //listAdapter.setData(listResult);
-            //listAdapter.notifyDataSetChanged();
-            listAdapter.notifyItemRangeChanged(0,listResult.size());
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onError(Throwable e) {
+                Log.e("TAG", e.getMessage());
+            }
 
+            @Override
+            public void onComplete() {
+                Log.e("TAG", "Completed");
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.disposeWhenDestroy();
+    }
+
+    private void disposeWhenDestroy(){
+        if (this.disposable != null && !this.disposable.isDisposed()) this.disposable.dispose();
     }
 
 }

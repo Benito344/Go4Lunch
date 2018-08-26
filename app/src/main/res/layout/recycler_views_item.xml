@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rlayout"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:paddingTop="10dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_restaurant"
+        android:textStyle="bold"
+        android:text="NAME"
+        android:textColor="#000"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_restaurant"
+        android:id="@+id/vicinity_restaurant"
+        android:text="VICINITY"
+        android:textColor="#787575"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/vicinity_restaurant"
+        android:textStyle="italic"
+        android:id="@+id/open_restaurant"
+        android:text="Open until x pm"
+        android:textColor="#787575"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/image_restaurant"
+        android:layout_marginEnd="20dp"
+        android:textStyle="italic"
+        android:id="@+id/distance_restaurant"
+        android:text="Distance"
+        android:textColor="#a6a3a3"/>
+
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:id="@+id/image_restaurant"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_restaurant"/>
+
+</RelativeLayout>

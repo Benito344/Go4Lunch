@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -149,6 +150,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     userName.setText(username);
                 }
             });
+        }
+    }
+
+    public void setNavigationVisibility(boolean visible) {
+        if (bottomNavView.isShown() && !visible) {
+            bottomNavView.setVisibility(View.GONE);
+        }
+        else if (!bottomNavView.isShown() && visible){
+            bottomNavView.setVisibility(View.VISIBLE);
         }
     }
 

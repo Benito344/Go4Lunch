@@ -19,6 +19,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     private RequestManager glide;
     private List<Result> result;
+    private Context context;
 
     public ListAdapter(List<Result> mResult, RequestManager glide){
         result = mResult;
@@ -27,7 +28,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     @Override
     public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        Context context = parent.getContext();
+        context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.recycler_views_item, parent, false);
         return new ListViewHolder(v);
@@ -35,7 +36,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     @Override
     public void onBindViewHolder(ListViewHolder viewHolder, int position){
-        viewHolder.updateDatas(result.get(position), glide);
+        viewHolder.updateDatas(result.get(position), glide, context);
     }
 
     @Override

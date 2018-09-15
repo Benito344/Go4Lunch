@@ -1,10 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controllers.activitys.RestauActivity">
+    tools:context=".controllers.activitys.RestauActivity"
+    android:background="#FFF">
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/restau_img"
+        android:src="@drawable/ic_restaurant"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="75dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_below="@+id/restau_img"
+        android:id="@+id/linear">
+
+    <TextView
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:id="@+id/restau_name"
+        android:textColor="#FFF"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:text="TEST"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/restau_style_vicinity"
+        android:textColor="#FFF"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:text="TEST"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/restau_call"
+        android:enabled="false"
+        android:background="#fff"
+        android:text="CALL"
+        android:textColor="@color/colorPrimaryDark"
+        android:gravity="bottom|center"
+        android:layout_below="@+id/linear"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/ic_baseline_call_24px"
+        android:layout_marginTop="15dp"/>
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/restau_like"
+        android:enabled="false"
+        android:background="#fff"
+        android:text="Like"
+        android:textColor="@color/colorPrimaryDark"
+        android:gravity="bottom|center"
+        android:layout_below="@+id/linear"
+        android:layout_toEndOf="@+id/restau_call"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/ic_baseline_star_24px"
+        android:layout_marginTop="15dp"/>
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/restau_web"
+        android:enabled="false"
+        android:background="#fff"
+        android:text="Like"
+        android:textColor="@color/colorPrimaryDark"
+        android:gravity="bottom|center"
+        android:layout_below="@+id/linear"
+        android:layout_toEndOf="@+id/restau_like"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/icons8_globe_24"
+        android:layout_marginTop="15dp"/>
+
+</RelativeLayout>

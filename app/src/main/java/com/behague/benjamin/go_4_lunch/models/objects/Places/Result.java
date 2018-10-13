@@ -1,7 +1,9 @@
 
-package com.behague.benjamin.go_4_lunch.models.objects;
+package com.behague.benjamin.go_4_lunch.models.objects.Places;
 
 import java.util.List;
+
+import com.behague.benjamin.go_4_lunch.models.objects.Metrix.PlusCode;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

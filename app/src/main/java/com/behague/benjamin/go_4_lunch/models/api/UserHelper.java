@@ -21,7 +21,7 @@ public class UserHelper {
     // --- CREATE ---
     public static Task<Void> createUser(String uid, String username, String uemail, String urlPicture) {
         // 1 - Create User object
-        User userToCreate = new User(uid, username, uemail, urlPicture);
+        User userToCreate = new User(uid, username, uemail, urlPicture, null);
 
         // 2 - Add a new User Document to Firestore
         return UserHelper.getUsersCollection()
@@ -32,5 +32,10 @@ public class UserHelper {
     // --- GET ---
     public static Task<DocumentSnapshot> getUser(String uid){
         return UserHelper.getUsersCollection().document(uid).get();
+    }
+
+    // --- UPDATE ---
+    public static Task<Void> updateUserRestau(String uid, String restau){
+        return UserHelper.getUsersCollection().document(uid).update("restau", restau);
     }
 }

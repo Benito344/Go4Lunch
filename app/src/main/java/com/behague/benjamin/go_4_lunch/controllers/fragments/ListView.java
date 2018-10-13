@@ -1,6 +1,7 @@
 package com.behague.benjamin.go_4_lunch.controllers.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,10 +14,15 @@ import android.view.ViewGroup;
 
 import com.behague.benjamin.go_4_lunch.R;
 import com.behague.benjamin.go_4_lunch.controllers.activitys.MainActivity;
-import com.behague.benjamin.go_4_lunch.models.objects.PlaceObject;
-import com.behague.benjamin.go_4_lunch.models.objects.Result;
+import com.behague.benjamin.go_4_lunch.controllers.activitys.RestauActivity;
+import com.behague.benjamin.go_4_lunch.models.objects.Places.PlaceObject;
+import com.behague.benjamin.go_4_lunch.models.objects.Places.Result;
+import com.behague.benjamin.go_4_lunch.models.objects.Metrix.Row;
+import com.behague.benjamin.go_4_lunch.utils.AppConfig;
+import com.behague.benjamin.go_4_lunch.utils.GPSTracker;
 import com.behague.benjamin.go_4_lunch.utils.GooglePlaceStream;
 import com.behague.benjamin.go_4_lunch.utils.ListAdapter;
+import com.behague.benjamin.go_4_lunch.views.ItemClickRecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -35,9 +41,9 @@ public class ListView extends Fragment {
 
     private List<Result> listResult;
     private ListAdapter listAdapter;
-    private Disposable disposable;
-    private String latLong ;
-
+    private Disposable disposablePlace;
+    public static String latLong ;
+    private GPSTracker mGPSTracker;
     @BindView(R.id.recycler_view)
     RecyclerView rcView;
 
@@ -57,10 +63,14 @@ public class ListView extends Fragment {
         assert inflater != null;
         View view = inflater.inflate(R.layout.fragment_list_view, container, false);
         ButterKnife.bind(this, view);
-        latLong = "43.6780742,4.0978829";
+        mGPSTracker = new GPSTracker(getContext());
+        latLong = mGPSTracker.getLatitude() + "," + mGPSTracker.getLongitude();
+        AppConfig.setPosition(latLong);
+
 
         this.initRecyclerView();
-        this.executeHttpRequest();
+        this.configureOnClickRecyclerView();
+        this.executeHttpRequestPlace();
 
         rcView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -89,12 +99,27 @@ public class ListView extends Fragment {
         this.rcView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    private void executeHttpRequest(){
-        this.disposable = GooglePlaceStream.streamPlaces(latLong, 1500, "restaurant").subscribeWith(new DisposableObserver<PlaceObject>(){
+    private void configureOnClickRecyclerView(){
+        ItemClickRecyclerView.addTo(rcView, R.layout.fragment_list_view)
+                .setOnItemClickListener(new ItemClickRecyclerView.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        String placeId = listResult.get(position).getPlaceId();
+                        Intent restauActivity = new Intent(getContext(), RestauActivity.class);
+                        restauActivity.putExtra("ID", placeId);
+                        if(listResult.get(position).getPhotos() != null) {
+                            restauActivity.putExtra("PICTURE", listResult.get(position).getPhotos().get(0).getPhotoReference());
+                        }
+                        getContext().startActivity(restauActivity);
+                    }
+                });
+    }
+
+    private void executeHttpRequestPlace(){
+        this.disposablePlace = GooglePlaceStream.streamPlaces(latLong, 1500, "restaurant").subscribeWith(new DisposableObserver<PlaceObject>(){
             @Override
             public void onNext(PlaceObject placeObject){
                 listResult.addAll(placeObject.getResults());
-                listAdapter.notifyItemRangeChanged(0,listResult.size());
             }
 
             @Override
@@ -105,6 +130,7 @@ public class ListView extends Fragment {
             @Override
             public void onComplete() {
                 Log.e("TAG", "Completed");
+                listAdapter.notifyItemRangeChanged(0,listResult.size());
             }
         });
     }
@@ -116,7 +142,7 @@ public class ListView extends Fragment {
     }
 
     private void disposeWhenDestroy(){
-        if (this.disposable != null && !this.disposable.isDisposed()) this.disposable.dispose();
+        if (this.disposablePlace != null && !this.disposablePlace.isDisposed()) this.disposablePlace.dispose();
     }
 
 }

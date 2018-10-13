@@ -1,5 +1,5 @@
 
-package com.behague.benjamin.go_4_lunch.models.objects;
+package com.behague.benjamin.go_4_lunch.models.objects.Places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.behague.benjamin.go_4_lunch.R;
-import com.behague.benjamin.go_4_lunch.models.objects.Result;
+import com.behague.benjamin.go_4_lunch.models.objects.Places.Result;
 import com.bumptech.glide.RequestManager;
 
 import java.util.List;

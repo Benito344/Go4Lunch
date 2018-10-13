@@ -23,7 +23,8 @@ import android.util.Log;
 public class GPSTracker extends Service implements LocationListener {
 
     private final Context mContext;
-
+    // DEMANDE AUTORISATION GPS
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1993;
     // Flag for GPS status
     boolean isGPSEnabled = false;
 
@@ -65,7 +66,7 @@ public class GPSTracker extends Service implements LocationListener {
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);*/
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                // No network provider is enabled
+                showSettingsAlert();
             } else {
                 this.canGetLocation = true;
                 if (isNetworkEnabled) {
@@ -83,6 +84,7 @@ public class GPSTracker extends Service implements LocationListener {
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
+                            AppConfig.setPosition(latitude + "," + longitude);
                         }
                     }
                 }

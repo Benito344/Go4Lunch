@@ -1,6 +1,10 @@
 package com.behague.benjamin.go_4_lunch.controllers.activitys;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -8,10 +12,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.apt7.rxpermissions.Permission;
+import com.apt7.rxpermissions.PermissionObservable;
 import com.behague.benjamin.go_4_lunch.R;
 import com.behague.benjamin.go_4_lunch.models.api.UserHelper;
 import com.behague.benjamin.go_4_lunch.models.objects.User;
@@ -43,6 +52,11 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.behague.benjamin.go_4_lunch.utils.GPSTracker.MY_PERMISSIONS_REQUEST_LOCATION;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private BottomNavigationView bottomNavView;
+
 
     @BindView(R.id.activity_main_nav_view)
     NavigationView navView;
@@ -60,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView userName;
     private TextView userEmail;
     private ImageView userPicture;
+
+    private LocationManager locationManager;
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
@@ -81,6 +98,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userName = headerView.findViewById(R.id.name_user);
         userEmail = headerView.findViewById(R.id.mail_user);
         userPicture = headerView.findViewById(R.id.picture_user);
+
+        PermissionObservable.getInstance().checkThePermissionStatus(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                .subscribe(new DisposableObserver<Permission>() {
+                    @Override
+                    public void onNext(Permission permission) {
+                        System.out.println("Permission Check : " + permission.getName() + " -- " + permission.getGranted());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("ERROR");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        System.out.println("DONE");
+                        // on complete, dispose method automatically un subscribes the subscriber
+                        dispose();
+                    }
+                });
 
         this.configureToolbar();
         this.configureDrawerLayout();
@@ -141,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
             this.userEmail.setText(email);
 
-            // 7 - Get additional data from Firestore (isMentor & Username)
             UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {

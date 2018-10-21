@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * Created by Benjamin BEHAGUE on 14/08/2018.
  */
-public class ListAdapter extends RecyclerView.Adapter<ListViewHolder> {
+public class ListViewAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     private RequestManager glide;
     private List<Result> result;
     private Context context;
 
-    public ListAdapter(List<Result> mResult, RequestManager glide){
+    public ListViewAdapter(List<Result> mResult, RequestManager glide){
         result = mResult;
         this.glide = glide;
     }

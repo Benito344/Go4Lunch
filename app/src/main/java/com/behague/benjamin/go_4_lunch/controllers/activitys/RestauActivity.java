@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,9 +19,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.behague.benjamin.go_4_lunch.R;
+import com.behague.benjamin.go_4_lunch.models.api.UserHelper;
 import com.behague.benjamin.go_4_lunch.models.objects.Details.Details;
 import com.behague.benjamin.go_4_lunch.models.objects.Details.Result;
 import com.behague.benjamin.go_4_lunch.models.objects.User;
+import com.behague.benjamin.go_4_lunch.utils.FriendsAdapter;
 import com.behague.benjamin.go_4_lunch.utils.GooglePlaceStream;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -28,6 +32,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +54,9 @@ public class RestauActivity extends AppCompatActivity {
 
     @BindView(R.id.restau_name)
     TextView nameRestau;
+
+    @BindView(R.id.restau_list_friend)
+    RecyclerView friendList;
 
     /*@BindView(R.id.restau_style_vicinity)
     TextView styleVicinityRestau;
@@ -81,6 +89,7 @@ public class RestauActivity extends AppCompatActivity {
     List<User> listUser;
     Result result;
     Disposable disposable;
+    private FriendsAdapter friendAdapt;
 
     RequestManager glide;
 
@@ -103,8 +112,16 @@ public class RestauActivity extends AppCompatActivity {
 
         listDetails = new ArrayList<>();
 
+        this.initRecyclerView();
         this.executeHttpRequestDetails();
         this.executeFirebaseRequest();
+    }
+
+    public void initRecyclerView(){
+        this.listUser = new ArrayList<>();
+        this.friendAdapt = new FriendsAdapter(listUser, Glide.with(this));
+        this.friendList.setAdapter(this.friendAdapt);
+        this.friendList.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void executeHttpRequestDetails(){
@@ -137,7 +154,14 @@ public class RestauActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
                             for(DocumentSnapshot documentSnapshot : myListOfDocuments){
-
+                                UserHelper.getUser(documentSnapshot.getId()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        User user = documentSnapshot.toObject(User.class);
+                                        listUser.add(user);
+                                        friendAdapt.notifyDataSetChanged();
+                                    }
+                                });
                             }
                         }
                     }

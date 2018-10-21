@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
-            app:contentScrim="@color/colorPrimary"
+            app:contentScrim="@color/colorPrimaryDark"
             app:expandedTitleMarginStart="48dp"
             app:expandedTitleMarginEnd="64dp">
 
@@ -112,12 +112,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/restau_list_friend">
 
-            </ListView>
+            </android.support.v7.widget.RecyclerView>
 
         </android.support.v7.widget.CardView>
 

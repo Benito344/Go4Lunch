@@ -23,7 +23,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsViewHolder> {
     private Context context;
 
     public FriendsAdapter (List<User> mUser, RequestManager glide){
-        user = mUser;
+        this.user = mUser;
         this.glide = glide;
     }
 
@@ -37,7 +37,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsViewHolder> {
 
     @Override
     public void onBindViewHolder(FriendsViewHolder viewHolder, int position){
-        viewHolder.updateDatas();
+        viewHolder.updateDatas(user.get(position), glide);
     }
 
     @Override

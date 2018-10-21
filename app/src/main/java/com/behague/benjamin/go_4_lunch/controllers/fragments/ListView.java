@@ -17,11 +17,10 @@ import com.behague.benjamin.go_4_lunch.controllers.activitys.MainActivity;
 import com.behague.benjamin.go_4_lunch.controllers.activitys.RestauActivity;
 import com.behague.benjamin.go_4_lunch.models.objects.Places.PlaceObject;
 import com.behague.benjamin.go_4_lunch.models.objects.Places.Result;
-import com.behague.benjamin.go_4_lunch.models.objects.Metrix.Row;
 import com.behague.benjamin.go_4_lunch.utils.AppConfig;
 import com.behague.benjamin.go_4_lunch.utils.GPSTracker;
 import com.behague.benjamin.go_4_lunch.utils.GooglePlaceStream;
-import com.behague.benjamin.go_4_lunch.utils.ListAdapter;
+import com.behague.benjamin.go_4_lunch.utils.ListViewAdapter;
 import com.behague.benjamin.go_4_lunch.views.ItemClickRecyclerView;
 import com.bumptech.glide.Glide;
 
@@ -40,7 +39,7 @@ import io.reactivex.observers.DisposableObserver;
 public class ListView extends Fragment {
 
     private List<Result> listResult;
-    private ListAdapter listAdapter;
+    private ListViewAdapter mListViewAdapter;
     private Disposable disposablePlace;
     public static String latLong ;
     private GPSTracker mGPSTracker;
@@ -94,8 +93,8 @@ public class ListView extends Fragment {
 
     private void initRecyclerView() {
         this.listResult = new ArrayList<>();
-        this.listAdapter = new ListAdapter(listResult, Glide.with(this));
-        this.rcView.setAdapter(this.listAdapter);
+        this.mListViewAdapter = new ListViewAdapter(listResult, Glide.with(this));
+        this.rcView.setAdapter(this.mListViewAdapter);
         this.rcView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
@@ -130,7 +129,7 @@ public class ListView extends Fragment {
             @Override
             public void onComplete() {
                 Log.e("TAG", "Completed");
-                listAdapter.notifyItemRangeChanged(0,listResult.size());
+                mListViewAdapter.notifyItemRangeChanged(0,listResult.size());
             }
         });
     }

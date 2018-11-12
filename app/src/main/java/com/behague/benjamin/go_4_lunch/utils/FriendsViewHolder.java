@@ -14,7 +14,10 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,31 +39,38 @@ public class FriendsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateDatas(User user, RequestManager glide) {
-        name.setText(user.getUsername());
+        if(user.getRestau().equals(user.getActualRestau())) {
+            name.setText(user.getUsername());
 
-        glide.load(user.getUrlPicture())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e(TAG, "Load failed", e);
+            glide.load(user.getUrlPicture())
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            Log.e(TAG, "Load failed", e);
 
-                        assert e != null;
-                        for (Throwable t : e.getRootCauses()) {
-                            Log.e(TAG, "Caused by", t);
+                            assert e != null;
+                            for (Throwable t : e.getRootCauses()) {
+                                Log.e(TAG, "Caused by", t);
+                            }
+
+                            e.logRootCauses(TAG);
+
+                            return false;
                         }
 
-                        e.logRootCauses(TAG);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            Log.e(TAG, "Load Success");
 
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Log.e(TAG, "Load Success");
-
-                        return false;
-                    }
-                }).into(image);
+                            return false;
+                        }
+                    })
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(image);
+        }
     }
+
+    @Nullable
+    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 }
 

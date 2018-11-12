@@ -11,6 +11,7 @@ public class User {
     private String uemail;
     private String urlPicture;
     private String restau;
+    private String actualRestau;
 
     public User() { }
 
@@ -28,6 +29,9 @@ public class User {
     public String getUemail() { return uemail; }
     public String getUrlPicture() { return urlPicture; }
     public String getRestau() { return restau; }
+    public String getActualRestau() {
+        return actualRestau;
+    }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
@@ -35,4 +39,5 @@ public class User {
     public void setUemail(String uemail) { this.uemail = uemail; }
     public void setUrlPicture(String urlPicture) { this.urlPicture = urlPicture; }
     public void setRestau(String restau) { this.restau = restau; }
+    public void setActualRestau(String actualRestau) { this.actualRestau = actualRestau; }
 }

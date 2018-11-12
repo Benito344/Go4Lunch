@@ -29,18 +29,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:src="@color/colorPrimaryDark"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax" />
-            <TextView
-                android:id="@+id/restau_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="RETGUYGEU"
-                android:textSize="20sp"
-                app:layout_collapseMode="parallax"
-                android:gravity="bottom"
-                android:paddingStart="20dp"
-                android:paddingBottom="50dp"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -62,8 +53,71 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="24dp">
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="@color/colorPrimaryDark"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF"
+                android:id="@+id/name_restaurant"
+                android:text="BLABLA"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_star_24px"
+                android:layout_toEndOf="@id/name_restaurant"
+                android:layout_marginStart="10dp"
+                android:id="@+id/fav1"
+                android:visibility="invisible"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_star_24px"
+                android:layout_toEndOf="@id/fav1"
+                android:layout_marginStart="5dp"
+                android:id="@+id/fav2"
+                android:visibility="invisible"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_star_24px"
+                android:layout_toEndOf="@id/fav2"
+                android:layout_marginStart="5dp"
+                android:id="@+id/fav3"
+                android:visibility="invisible"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_star_24px"
+                android:layout_toEndOf="@id/fav3"
+                android:layout_marginStart="5dp"
+                android:id="@+id/fav4"
+                android:visibility="invisible"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_star_24px"
+                android:layout_toEndOf="@id/fav4"
+                android:layout_marginStart="5dp"
+                android:id="@+id/fav5"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="vicinity"
+                android:layout_below="@id/name_restaurant"
+                android:textColor="#FFF"
+                android:id="@+id/vicinity_restaurant"
+                android:layout_marginTop="10dp"/>
+        </RelativeLayout>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -79,6 +133,7 @@
                 android:layout_height="100dp"
                 android:drawableTop="@drawable/ic_baseline_call_24px"
                 android:id="@+id/restau_call"
+                android:textColor="@color/colorPrimaryDark"
                 android:text="CALL"
                 android:paddingTop="20dp"
                 android:background="#FFF"/>
@@ -86,8 +141,9 @@
             <Button
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:drawableTop="@drawable/ic_baseline_star_24px"
+                android:drawableTop="@drawable/ic_orange_baseline_star_24px"
                 android:id="@+id/restau_like"
+                android:textColor="@color/colorPrimaryDark"
                 android:text="LIKE"
                 android:paddingTop="20dp"
                 android:background="#FFF"
@@ -96,8 +152,9 @@
             <Button
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:drawableTop="@drawable/icons8_globe_24"
+                android:drawableTop="@drawable/baseline_public_24"
                 android:id="@+id/restau_web"
+                android:textColor="@color/colorPrimaryDark"
                 android:text="WEBSITE"
                 android:paddingTop="20dp"
                 android:background="#FFF"
@@ -129,6 +186,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
+        android:id="@+id/restau_float_button"
         app:layout_anchorGravity="bottom|right|end"
         android:src="@drawable/baseline_done_black_18dp"
         android:layout_margin="@dimen/fab_margin"

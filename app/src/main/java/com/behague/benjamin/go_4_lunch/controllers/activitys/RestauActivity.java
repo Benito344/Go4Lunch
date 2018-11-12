@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,10 +31,13 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -52,15 +56,18 @@ public class RestauActivity extends AppCompatActivity {
     @BindView(R.id.restau_img)
     ImageView imgRestau;
 
-    @BindView(R.id.restau_name)
+    @BindView(R.id.name_restaurant)
     TextView nameRestau;
 
     @BindView(R.id.restau_list_friend)
     RecyclerView friendList;
 
-    /*@BindView(R.id.restau_style_vicinity)
-    TextView styleVicinityRestau;
+    @BindView(R.id.restau_float_button)
+    FloatingActionButton floatButton;
 
+    @BindView(R.id.vicinity_restaurant)
+    TextView styleVicinityRestau;
+/*
     @BindView(R.id.restau_call)
     Button  callRestau;
 
@@ -68,22 +75,23 @@ public class RestauActivity extends AppCompatActivity {
     Button likeRestau;
 
     @BindView(R.id.restau_web)
-    Button webRestau;
+    Button webRestau; */
 
-    /*@BindView(R.id.restau_rating0)
-    ImageView rating0;
 
-    @BindView(R.id.restau_rating1)
+    @BindView(R.id.fav1)
     ImageView rating1;
 
-    @BindView(R.id.restau_rating2)
+    @BindView(R.id.fav2)
     ImageView rating2;
 
-    @BindView(R.id.restau_rating3)
+    @BindView(R.id.fav3)
     ImageView rating3;
 
-    @BindView(R.id.restau_rating4)
-    ImageView rating4;*/
+    @BindView(R.id.fav4)
+    ImageView rating4;
+
+    @BindView(R.id.fav5)
+    ImageView rating5;
 
     List<Result> listDetails;
     List<User> listUser;
@@ -158,7 +166,9 @@ public class RestauActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         User user = documentSnapshot.toObject(User.class);
-                                        listUser.add(user);
+                                        user.setActualRestau(result.getName());
+                                        if(!user.getUid().equals(getCurrentUser().getUid())){
+                                            listUser.add(user);}
                                         friendAdapt.notifyDataSetChanged();
                                     }
                                 });
@@ -170,9 +180,9 @@ public class RestauActivity extends AppCompatActivity {
 
     private void updateUI(){
         nameRestau.setText(result.getName());
-        //String styleVicy = result.getTypes().get(0) + " - " + result.getVicinity();
-       /* styleVicinityRestau.setText(styleVicy);
-        if(result.getFormattedPhoneNumber() != null){
+        String styleVicy = result.getTypes().get(0) + " - " + result.getVicinity();
+        styleVicinityRestau.setText(styleVicy);
+        /*if(result.getFormattedPhoneNumber() != null){
             callRestau.setEnabled(true);
         } else {
             webRestau.setEnabled(false);
@@ -182,40 +192,40 @@ public class RestauActivity extends AppCompatActivity {
             webRestau.setEnabled(true);
         } else {
             webRestau.setEnabled(false);
-        }
+        }*/
 
         int rat = (int) Math.round(result.getRating());
 
         switch(rat){
             case 1 :
-                rating0.setVisibility(View.VISIBLE);
-                break;
-            case 2 :
-                rating0.setVisibility(View.VISIBLE);
                 rating1.setVisibility(View.VISIBLE);
                 break;
-            case 3 :
-                rating0.setVisibility(View.VISIBLE);
+            case 2 :
                 rating1.setVisibility(View.VISIBLE);
                 rating2.setVisibility(View.VISIBLE);
                 break;
-            case 4 :
-                rating0.setVisibility(View.VISIBLE);
+            case 3 :
                 rating1.setVisibility(View.VISIBLE);
                 rating2.setVisibility(View.VISIBLE);
                 rating3.setVisibility(View.VISIBLE);
                 break;
-            case 5 :
-                rating0.setVisibility(View.VISIBLE);
+            case 4 :
                 rating1.setVisibility(View.VISIBLE);
                 rating2.setVisibility(View.VISIBLE);
                 rating3.setVisibility(View.VISIBLE);
                 rating4.setVisibility(View.VISIBLE);
                 break;
+            case 5 :
+                rating1.setVisibility(View.VISIBLE);
+                rating2.setVisibility(View.VISIBLE);
+                rating3.setVisibility(View.VISIBLE);
+                rating4.setVisibility(View.VISIBLE);
+                rating5.setVisibility(View.VISIBLE);
+                break;
             default :
                 break;
         }
-*/
+
         if(picture != null) {
             Glide.with(this)
                     .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&maxheight=150&key=AIzaSyApi61iqZP6ZR-mGkYvZkTSLH7OskLQJj0&photoreference=" + picture)
@@ -231,8 +241,16 @@ public class RestauActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.restau_web)
-    public void onClick(){
+    public void onClickWeb(){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(result.getWebsite()));
         startActivity(browserIntent);
     }
+
+    @OnClick(R.id.restau_float_button)
+    public void onClickFloat(){
+        UserHelper.updateUserRestau(getCurrentUser().getUid(), result.getName());
+    }
+
+    @Nullable
+    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 }

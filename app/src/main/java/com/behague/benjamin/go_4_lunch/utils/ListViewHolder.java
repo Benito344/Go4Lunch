@@ -3,6 +3,7 @@ package com.behague.benjamin.go_4_lunch.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -60,6 +61,17 @@ public class ListViewHolder extends RecyclerView.ViewHolder {
         this.vicinity.setText(result.getVicinity());
         String destinations = result.getGeometry().getLocation().getLat() + "," + result.getGeometry().getLocation().getLng();
         executeHttpRequestMetrix(destinations);
+        if(result.getOpeningHours() != null){
+            if(result.getOpeningHours().getOpenNow() != null){
+                if(result.getOpeningHours().getOpenNow()){
+                    open.setText("Open");
+                    open.setTextColor(ContextCompat.getColor(context,R.color.green));
+                } else {
+                    open.setText("Closed");
+                    open.setTextColor(ContextCompat.getColor(context, R.color.red));
+                }
+            }
+        }
 //        if(result.getOpeningHours().getOpenNow() != null){ //Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 //            if(result.getOpeningHours().getOpenNow()){
 //                open.setText("Open");

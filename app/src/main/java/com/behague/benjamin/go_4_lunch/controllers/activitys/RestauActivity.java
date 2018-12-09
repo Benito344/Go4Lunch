@@ -99,8 +99,6 @@ public class RestauActivity extends AppCompatActivity {
     Disposable disposable;
     private FriendsAdapter friendAdapt;
 
-    RequestManager glide;
-
     private String id;
     private String picture;
     private final String TAG = "GLIDE";

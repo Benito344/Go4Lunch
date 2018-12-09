@@ -34,6 +34,7 @@ import com.apt7.rxpermissions.Permission;
 import com.apt7.rxpermissions.PermissionObservable;
 import com.behague.benjamin.go_4_lunch.R;
 import com.behague.benjamin.go_4_lunch.models.api.UserHelper;
+import com.behague.benjamin.go_4_lunch.models.objects.Details.Result;
 import com.behague.benjamin.go_4_lunch.models.objects.User;
 import com.behague.benjamin.go_4_lunch.views.PageAdapter;
 import com.bumptech.glide.Glide;
@@ -41,13 +42,19 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
     private static final int RC_SIGN_IN = 1993;
+
+    public static List<User> listUser;
+    Result result;
+    private String COLLECTION_NAME = "users";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.configureNavigationView();
         this.configureViewPager();
         this.initUserInfo();
+        this.executeFirebaseRequest();
 
         bottomNavView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -188,6 +200,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         }
+    }
+
+    private void executeFirebaseRequest(){
+        listUser = new ArrayList<>();
+        FirebaseFirestore.getInstance()
+                .collection(COLLECTION_NAME)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                            for(DocumentSnapshot documentSnapshot : myListOfDocuments){
+                                UserHelper.getUser(documentSnapshot.getId()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        User user = documentSnapshot.toObject(User.class);
+                                        //user.setActualRestau(result.getName());
+                                        if(!user.getUid().equals(getCurrentUser().getUid())){
+                                            listUser.add(user);}
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
     }
 
     public void setNavigationVisibility(boolean visible) {
